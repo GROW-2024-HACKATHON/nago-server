@@ -1,6 +1,8 @@
 package kr.seula.nagoserver.domain.report.controller;
 
 import kr.seula.nagoserver.domain.report.entity.ReportEntity;
+import kr.seula.nagoserver.domain.report.exception.IllegalParkingExcpetion;
+import kr.seula.nagoserver.domain.report.exception.ImageNotFoundException;
 import kr.seula.nagoserver.domain.report.exception.ReportNotFoundException;
 import kr.seula.nagoserver.domain.report.request.ReportDelRequest;
 import kr.seula.nagoserver.domain.report.request.ReportEditRequest;
@@ -18,26 +20,34 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("report")
+@RequestMapping("/report")
 public class ReportController {
 
     private final ReportService service;
 
-    @PostMapping
+    @PostMapping("/upload")
     public BaseResponse<ReportEntity> uploadImage(
             @RequestParam MultipartFile image
     ) throws IOException {
-        return service.uploadImage(image);
+        return service.uploadImageAndPredict(image);
     }
 
-    @PatchMapping
+    @PatchMapping("/finish")
     public BaseResponse<ReportEntity> finishReport(
             @RequestBody ReportFinishRequest dto
     ) {
         return service.finishReport(dto);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/add-image")
+    public BaseResponse<ReportEntity> addMoreImage(
+            @RequestParam MultipartFile image,
+            @RequestParam long id
+    ) throws IOException {
+        return service.addMoreImage(id, image);
+    }
+
+    @PatchMapping("/edit/{id}")
     public BaseResponse<ReportEntity> editReport(
             @PathVariable long id,
             @RequestBody ReportEditRequest dto
@@ -45,28 +55,28 @@ public class ReportController {
         return service.editReport(id, dto);
     }
 
-    @GetMapping
+    @GetMapping("/get-all")
     public BaseResponse<List<ReportEntity>> getAllReport(
             @RequestBody ReportGetRequest dto
     ) {
         return service.getAllReport(dto);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public BaseResponse<ReportEntity> getReport(
             @PathVariable long id
     ) {
         return service.getReport(id);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/del/{id}")
     public BaseResponse<?> delReport(
             @PathVariable long id
     ) {
         return service.delReport(id);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/del-all")
     public BaseResponse<?> delAllReport(
             @RequestBody ReportDelRequest dto
     ) {
@@ -84,11 +94,21 @@ public class ReportController {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(ReportNotFoundException.class)
+    @ExceptionHandler(ImageNotFoundException.class)
     public BaseResponse<?> handleImageNotFound() {
         return new BaseResponse<> (
                 false,
-                "신고가 존재하지 않습니다.",
+                "이미지가 존재하지 않습니다.",
+                null
+        );
+    }
+
+    @ResponseStatus(HttpStatus.UPGRADE_REQUIRED)
+    @ExceptionHandler(IllegalParkingExcpetion.class)
+    public BaseResponse<?> handleIllegalParking() {
+        return new BaseResponse<> (
+                false,
+                "불법주정차이므로 사진이 더 필요합니다.",
                 null
         );
     }

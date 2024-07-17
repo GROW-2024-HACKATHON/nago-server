@@ -3,6 +3,7 @@ package kr.seula.nagoserver.domain.report.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.cloud.storage.Bucket;
 import kr.seula.nagoserver.domain.report.entity.ReportEntity;
+import kr.seula.nagoserver.domain.report.exception.IllegalParkingExcpetion;
 import kr.seula.nagoserver.domain.report.exception.ImageNotFoundException;
 import kr.seula.nagoserver.domain.report.exception.ReportNotFoundException;
 import kr.seula.nagoserver.domain.report.repository.ReportRepository;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -27,7 +29,18 @@ public class ReportService {
     private final ReportRepository repository;
     private final ReportAiService service;
 
-    public BaseResponse<ReportEntity> uploadImage(MultipartFile image) throws IOException {
+    public String uploadImage(MultipartFile image) throws IOException {
+        String name = UUID.randomUUID() + ".png";
+
+        bucket.create(name, image.getBytes(), image.getContentType());
+
+        return String.format("https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media",
+                bucket.getName(),
+                name
+        );
+    }
+
+    public BaseResponse<ReportEntity> uploadImageAndPredict(MultipartFile image) throws IOException {
         String name = UUID.randomUUID() + ".png";
 
         bucket.create(name, image.getBytes(), image.getContentType());
@@ -40,7 +53,7 @@ public class ReportService {
         JsonNode result = service.getResult(image);
 
         ReportEntity entity = ReportEntity.builder()
-                .image(url)
+                .firstImage(url)
                 .title(result.get("title").asText())
                 .content(result.get("content").asText())
                 .large(result.get("large").asText())
@@ -49,9 +62,34 @@ public class ReportService {
 
         repository.save(entity);
 
-        return new BaseResponse<> (
+        if (Objects.equals(result.get("large").asText(), "불법주정차")) {
+            return new BaseResponse<> (
+                    false,
+                    "불법주정차이므로 사진이 더 필요합니다.",
+                    entity
+            );
+        }
+
+        return new BaseResponse<>(
                 true,
                 "이미지를 업로드하였습니다.",
+                entity
+        );
+    }
+
+    public BaseResponse<ReportEntity> addMoreImage(long id, MultipartFile image) throws IOException {
+        ReportEntity entity = repository.findById(id)
+                .orElseThrow(ReportNotFoundException::new);
+
+        String url = uploadImage(image);
+
+        entity.addMoreImage(url);
+
+        repository.save(entity);
+
+        return new BaseResponse<> (
+                true,
+                "이미지가 추가되었습니다.",
                 entity
         );
     }
@@ -64,7 +102,7 @@ public class ReportService {
 
         repository.save(entity);
 
-        return new BaseResponse<> (
+        return new BaseResponse<>(
                 true,
                 "신고가 접수되었습니다.",
                 entity
@@ -79,7 +117,7 @@ public class ReportService {
 
         repository.save(entity);
 
-        return new BaseResponse<> (
+        return new BaseResponse<>(
                 true,
                 "신고가 수정되었습니다.",
                 entity
@@ -87,7 +125,7 @@ public class ReportService {
     }
 
     public BaseResponse<List<ReportEntity>> getAllReport(ReportGetRequest dto) {
-        return new BaseResponse<> (
+        return new BaseResponse<>(
                 true,
                 "전체 신고가 조회되었습니다.",
                 repository.findAllByNameAndEmailAndPhone(
@@ -102,7 +140,7 @@ public class ReportService {
         ReportEntity entity = repository.findById(id)
                 .orElseThrow(ReportNotFoundException::new);
 
-        return new BaseResponse<> (
+        return new BaseResponse<>(
                 true,
                 "신고가 조회되었습니다.",
                 entity
@@ -115,7 +153,7 @@ public class ReportService {
 
         repository.delete(entity);
 
-        return new BaseResponse<> (
+        return new BaseResponse<>(
                 true,
                 "신고가 삭제되었습니다.",
                 null
@@ -129,7 +167,7 @@ public class ReportService {
                 dto.getPhone()
         );
 
-        return new BaseResponse<> (
+        return new BaseResponse<>(
                 true,
                 "전체 신고가 삭제되었습니다.",
                 null

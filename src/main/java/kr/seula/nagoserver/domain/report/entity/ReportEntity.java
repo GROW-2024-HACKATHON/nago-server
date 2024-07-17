@@ -6,17 +6,24 @@ import kr.seula.nagoserver.domain.report.request.ReportEditRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class ReportEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String image;
+    private String firstImage;
+
+    private String secondImage;
 
     private String title;
 
@@ -38,9 +45,13 @@ public class ReportEntity {
 
     private String address;
 
+    @CreatedDate
+    private LocalDateTime createdAt;
+
     @Builder
     public ReportEntity(
-            String image,
+            String firstImage,
+            String secondImage,
             String title,
             String content,
             String large,
@@ -52,7 +63,8 @@ public class ReportEntity {
             String lng,
             String address
     ) {
-        this.image = image;
+        this.firstImage = firstImage;
+        this.secondImage = secondImage;
         this.title = title;
         this.content = content;
         this.large = large;
@@ -79,5 +91,9 @@ public class ReportEntity {
         this.lat = dto.getLat();
         this.lng = dto.getLng();
         this.address = dto.getAddress();
+    }
+
+    public void addMoreImage(String image) {
+        this.secondImage = image;
     }
 }
