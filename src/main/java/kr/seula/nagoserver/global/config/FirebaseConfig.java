@@ -6,22 +6,27 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.cloud.StorageClient;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 
 @Configuration
+@RequiredArgsConstructor
 public class FirebaseConfig {
+
+    private final ResourceLoader resourceLoader;
 
     @Bean
     public FirebaseApp firebaseApp() throws IOException {
-        FileInputStream serviceAccount =
-                new FileInputStream("./src/main/resources/firebase.json");
+        Resource resource = resourceLoader.getResource("classpath:firebase.json");
 
         FirebaseOptions options = new FirebaseOptions.Builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                .setCredentials(GoogleCredentials.fromStream(resource.getInputStream()))
                 .setStorageBucket("nago-9b55f.appspot.com")
                 .build();
 
