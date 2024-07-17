@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ReportProgressType {
 
-    PENDING("진행 전"), PROCESSING("진행 중"), DONE("해결 완료");
+    PENDING("진행전"), PROCESSING("처리중"), DONE("처리완료");
 
     private final String value;
 
