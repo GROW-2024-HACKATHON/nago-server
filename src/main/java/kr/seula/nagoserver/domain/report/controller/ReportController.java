@@ -57,7 +57,7 @@ public class ReportController {
 
     @GetMapping("/get-all")
     public BaseResponse<List<ReportEntity>> getAllReport(
-            @RequestBody ReportGetRequest dto
+            ReportGetRequest dto
     ) {
         return service.getAllReport(dto);
     }
