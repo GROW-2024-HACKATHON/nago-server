@@ -46,8 +46,7 @@ public class ReportEntity {
 
     private String address;
 
-    @Enumerated(EnumType.STRING)
-    private ReportProgressType type;
+    private String type;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -99,10 +98,18 @@ public class ReportEntity {
         this.lat = dto.getLat();
         this.lng = dto.getLng();
         this.address = dto.getAddress();
-        this.type = ReportProgressType.PENDING;
+        this.type = ReportProgressType.PENDING.getValue();
     }
 
     public void addMoreImage(String image) {
         this.secondImage = image;
+    }
+
+    public void update() {
+        if (type.equals(ReportProgressType.PENDING.getValue())) {
+            this.type = ReportProgressType.PROCESSING.getValue();
+        } else if (type.equals(ReportProgressType.PROCESSING.getValue())) {
+            this.type = ReportProgressType.DONE.getValue();
+        }
     }
 }

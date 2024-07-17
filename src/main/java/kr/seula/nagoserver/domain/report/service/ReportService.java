@@ -173,4 +173,19 @@ public class ReportService {
         );
     }
 
+    public BaseResponse<ReportEntity> updateReport(long id) {
+        ReportEntity entity = repository.findById(id)
+                .orElseThrow(ReportNotFoundException::new);
+
+        entity.update();
+
+        repository.save(entity);
+
+        return new BaseResponse<> (
+                true,
+                "신고 진행 상황이 변경되었습니다.",
+                entity
+        );
+    }
+
 }

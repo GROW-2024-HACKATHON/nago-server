@@ -83,6 +83,11 @@ public class ReportController {
         return service.delAllReport(dto);
     }
 
+    @GetMapping("/update/{id}")
+    public BaseResponse<?> updateReport(@PathVariable long id) {
+        return service.updateReport(id);
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ReportNotFoundException.class)
     public BaseResponse<?> handleReportNotFound() {
