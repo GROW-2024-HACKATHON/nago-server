@@ -11,6 +11,10 @@ public class ReportFinishRequest {
 
     private String content;
 
+    private String large;
+
+    private String small;
+
     private String name;
 
     private String email;
