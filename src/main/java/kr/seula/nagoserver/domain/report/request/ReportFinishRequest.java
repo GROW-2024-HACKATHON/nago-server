@@ -7,6 +7,10 @@ public class ReportFinishRequest {
 
     private long id;
 
+    private String title;
+
+    private String content;
+
     private String name;
 
     private String email;

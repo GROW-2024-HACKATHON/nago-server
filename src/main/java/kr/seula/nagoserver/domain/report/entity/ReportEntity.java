@@ -85,6 +85,8 @@ public class ReportEntity {
     }
 
     public void finish(ReportFinishRequest dto) {
+        this.title = dto.getTitle();
+        this.content = dto.getContent();
         this.name = dto.getName();
         this.email = dto.getEmail();
         this.phone = dto.getPhone();
