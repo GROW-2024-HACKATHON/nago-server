@@ -3,7 +3,6 @@ package kr.seula.nagoserver.domain.report.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.cloud.storage.Bucket;
 import kr.seula.nagoserver.domain.report.entity.ReportEntity;
-import kr.seula.nagoserver.domain.report.exception.IllegalParkingExcpetion;
 import kr.seula.nagoserver.domain.report.exception.ImageNotFoundException;
 import kr.seula.nagoserver.domain.report.exception.ReportNotFoundException;
 import kr.seula.nagoserver.domain.report.repository.ReportRepository;

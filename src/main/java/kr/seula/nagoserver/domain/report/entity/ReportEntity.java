@@ -1,6 +1,7 @@
 package kr.seula.nagoserver.domain.report.entity;
 
 import jakarta.persistence.*;
+import kr.seula.nagoserver.domain.report.enums.ReportProgressType;
 import kr.seula.nagoserver.domain.report.request.ReportFinishRequest;
 import kr.seula.nagoserver.domain.report.request.ReportEditRequest;
 import lombok.Builder;
@@ -44,6 +45,9 @@ public class ReportEntity {
     private String lng;
 
     private String address;
+
+    @Enumerated(EnumType.STRING)
+    private ReportProgressType type;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -95,6 +99,7 @@ public class ReportEntity {
         this.lat = dto.getLat();
         this.lng = dto.getLng();
         this.address = dto.getAddress();
+        this.type = ReportProgressType.PENDING;
     }
 
     public void addMoreImage(String image) {
