@@ -2,7 +2,9 @@ package kr.seula.nagoserver.domain.report.controller;
 
 import kr.seula.nagoserver.domain.report.entity.ReportEntity;
 import kr.seula.nagoserver.domain.report.exception.ReportNotFoundException;
+import kr.seula.nagoserver.domain.report.request.ReportAddRequest;
 import kr.seula.nagoserver.domain.report.request.ReportEditRequest;
+import kr.seula.nagoserver.domain.report.request.ReportGetRequest;
 import kr.seula.nagoserver.domain.report.service.ReportService;
 import kr.seula.nagoserver.global.BaseResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +24,10 @@ public class ReportController {
 
     @PostMapping
     public BaseResponse<ReportEntity> addReport(
-            @RequestParam MultipartFile image
-    ) throws IOException {
-        return service.addReport(image);
+            @RequestParam MultipartFile image,
+            @RequestBody ReportAddRequest dto
+            ) throws IOException {
+        return service.addReport(image, dto);
     }
 
     @PatchMapping("/{id}")
@@ -36,8 +39,10 @@ public class ReportController {
     }
 
     @GetMapping()
-    public BaseResponse<List<ReportEntity>> getAllReport() {
-        return service.getAllReport();
+    public BaseResponse<List<ReportEntity>> getAllReport(
+            @RequestBody ReportGetRequest dto
+            ) {
+        return service.getAllReport(dto);
     }
 
     @GetMapping("/{id}")

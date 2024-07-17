@@ -5,7 +5,9 @@ import com.google.cloud.storage.Bucket;
 import kr.seula.nagoserver.domain.report.entity.ReportEntity;
 import kr.seula.nagoserver.domain.report.exception.ReportNotFoundException;
 import kr.seula.nagoserver.domain.report.repository.ReportRepository;
+import kr.seula.nagoserver.domain.report.request.ReportAddRequest;
 import kr.seula.nagoserver.domain.report.request.ReportEditRequest;
+import kr.seula.nagoserver.domain.report.request.ReportGetRequest;
 import kr.seula.nagoserver.global.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,7 @@ public class ReportService {
     private final ReportRepository repository;
     private final ReportAiService service;
 
-    public BaseResponse<ReportEntity> addReport(MultipartFile image) throws IOException {
+    public BaseResponse<ReportEntity> addReport(MultipartFile image, ReportAddRequest dto) throws IOException {
         String name = UUID.randomUUID() + ".png";
 
         bucket.create(name, image.getBytes(), image.getContentType());
@@ -40,6 +42,12 @@ public class ReportService {
                 .content(result.get("content").asText())
                 .large(result.get("large").asText())
                 .small(result.get("small").asText())
+                .name(dto.getName())
+                .email(dto.getEmail())
+                .phone(dto.getPhone())
+                .lat(dto.getLat())
+                .lng(dto.getLng())
+                .address(dto.getAddress())
                 .build();
 
         repository.save(entity);
@@ -66,11 +74,15 @@ public class ReportService {
         );
     }
 
-    public BaseResponse<List<ReportEntity>> getAllReport() {
+    public BaseResponse<List<ReportEntity>> getAllReport(ReportGetRequest dto) {
         return new BaseResponse<> (
                 true,
                 "전체 신고가 조회되었습니다.",
-                repository.findAll()
+                repository.findAllByNameAndEmailAndPhone(
+                        dto.getName(),
+                        dto.getEmail(),
+                        dto.getPhone()
+                )
         );
     }
 

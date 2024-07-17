@@ -25,13 +25,43 @@ public class ReportEntity {
 
     private String small;
 
+    private String name;
+
+    private String email;
+
+    private String phone;
+
+    private String lat;
+
+    private String lng;
+
+    private String address;
+
     @Builder
-    public ReportEntity(String image, String title, String content, String large, String small) {
+    public ReportEntity(
+            String image,
+            String title,
+            String content,
+            String large,
+            String small,
+            String name,
+            String email,
+            String phone,
+            String lat,
+            String lng,
+            String address
+    ) {
         this.image = image;
         this.title = title;
         this.content = content;
         this.large = large;
         this.small = small;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.lat = lat;
+        this.lng = lng;
+        this.address = address;
     }
 
     public void editReport(ReportEditRequest dto) {
