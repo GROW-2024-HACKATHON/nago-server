@@ -3,7 +3,6 @@ package kr.seula.nagoserver.domain.report.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.cloud.storage.Bucket;
 import kr.seula.nagoserver.domain.report.entity.ReportEntity;
-import kr.seula.nagoserver.domain.report.exception.IllegalParkingExcpetion;
 import kr.seula.nagoserver.domain.report.exception.ImageNotFoundException;
 import kr.seula.nagoserver.domain.report.exception.ReportNotFoundException;
 import kr.seula.nagoserver.domain.report.repository.ReportRepository;
@@ -171,6 +170,21 @@ public class ReportService {
                 true,
                 "전체 신고가 삭제되었습니다.",
                 null
+        );
+    }
+
+    public BaseResponse<ReportEntity> updateReport(long id) {
+        ReportEntity entity = repository.findById(id)
+                .orElseThrow(ReportNotFoundException::new);
+
+        entity.update();
+
+        repository.save(entity);
+
+        return new BaseResponse<> (
+                true,
+                "신고 진행 상황이 변경되었습니다.",
+                entity
         );
     }
 
