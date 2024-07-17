@@ -10,5 +10,6 @@ import java.util.List;
 public interface ReportRepository extends JpaRepository<ReportEntity, Long> {
 
     List<ReportEntity> findAllByNameAndEmailAndPhone(String name, String email, String phone);
+    void deleteAllByNameAndEmailAndPhone(String name, String email, String phone);
 
 }

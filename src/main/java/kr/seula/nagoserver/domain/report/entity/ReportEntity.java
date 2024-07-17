@@ -1,6 +1,7 @@
 package kr.seula.nagoserver.domain.report.entity;
 
 import jakarta.persistence.*;
+import kr.seula.nagoserver.domain.report.request.ReportFinishRequest;
 import kr.seula.nagoserver.domain.report.request.ReportEditRequest;
 import lombok.Builder;
 import lombok.Getter;
@@ -64,10 +65,19 @@ public class ReportEntity {
         this.address = address;
     }
 
-    public void editReport(ReportEditRequest dto) {
+    public void edit(ReportEditRequest dto) {
         this.title = dto.getTitle();
         this.content = dto.getContent();
         this.large = dto.getLarge();
         this.small = dto.getSmall();
+    }
+
+    public void finish(ReportFinishRequest dto) {
+        this.name = dto.getName();
+        this.email = dto.getEmail();
+        this.phone = dto.getPhone();
+        this.lat = dto.getLat();
+        this.lng = dto.getLng();
+        this.address = dto.getAddress();
     }
 }

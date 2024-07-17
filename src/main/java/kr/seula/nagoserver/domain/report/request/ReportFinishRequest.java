@@ -3,7 +3,9 @@ package kr.seula.nagoserver.domain.report.request;
 import lombok.Getter;
 
 @Getter
-public class ReportAddRequest {
+public class ReportFinishRequest {
+
+    private long id;
 
     private String name;
 
